@@ -15,14 +15,13 @@ lib64/
 parts/
 sdist/
 var/
-_old/
 wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 
 # Virtual Environment
-venv/s
+venv/
 env/
 ENV/
 
@@ -33,11 +32,22 @@ ENV/
 *.swo
 
 # Project specific
-jobs.json
+output/
+test/
+_old/
 *.blend
-build/
-dist/
+*.blend1
+*.blend2
+desktop.ini
+jobs.json
 
-# OS
-.DS_Store
-Thumbs.db 
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk 
