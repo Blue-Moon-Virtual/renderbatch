@@ -15,31 +15,29 @@ lib64/
 parts/
 sdist/
 var/
+_old/
 wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 
-# Environments
-.env
-.venv
+# Virtual Environment
+venv/s
 env/
-venv/
 ENV/
 
 # IDE
 .idea/
 .vscode/
-
-# Windows
-desktop.ini
-Thumbs.db
+*.swp
+*.swo
 
 # Project specific
-output/
-_old/
-*.log
-~/*
+jobs.json
+*.blend
+build/
+dist/
 
 # OS
-.DS_Store 
+.DS_Store
+Thumbs.db 

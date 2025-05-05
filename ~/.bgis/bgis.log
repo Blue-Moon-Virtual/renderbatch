@@ -1,0 +1,34 @@
+INFO:BlenderGIS-2210:92:###### Starting new Blender session : 2025-04-29 12:42:37
+DEBUG:BlenderGIS-2210.core.checkdeps:9:GDAL Python binding unavailable
+DEBUG:BlenderGIS-2210.core.checkdeps:20:PyProj unavailable
+DEBUG:BlenderGIS-2210.core.checkdeps:34:Pillow available
+ERROR:BlenderGIS-2210.core.checkdeps:42:Cannot install ImageIO's Freeimage plugin
+Traceback (most recent call last):
+  File "C:\Users\Stankovic\AppData\Roaming\Blender Foundation\Blender\4.3\scripts\addons\BlenderGIS-2210\core\checkdeps.py", line 40, in <module>
+    imageio.plugins._freeimage.get_freeimage_lib() #try to download freeimage lib
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Stankovic\AppData\Roaming\Blender Foundation\Blender\4.3\scripts\addons\BlenderGIS-2210\core\lib\imageio\plugins\_freeimage.py", line 56, in get_freeimage_lib
+    return get_remote_file(FNAME_PER_PLATFORM[plat])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Stankovic\AppData\Roaming\Blender Foundation\Blender\4.3\scripts\addons\BlenderGIS-2210\core\lib\imageio\core\fetching.py", line 99, in get_remote_file
+    _fetch_file(url, filename)
+  File "C:\Users\Stankovic\AppData\Roaming\Blender Foundation\Blender\4.3\scripts\addons\BlenderGIS-2210\core\lib\imageio\core\fetching.py", line 153, in _fetch_file
+    raise IOError('Unable to download %r. Perhaps there is a no internet '
+OSError: Unable to download 'freeimage-3.18.0-win64.dll'. Perhaps there is a no internet connection? If there is, please report this problem.
+INFO:BlenderGIS-2210:92:###### Starting new Blender session : 2025-04-29 12:43:37
+DEBUG:BlenderGIS-2210.core.checkdeps:9:GDAL Python binding unavailable
+DEBUG:BlenderGIS-2210.core.checkdeps:20:PyProj unavailable
+DEBUG:BlenderGIS-2210.core.checkdeps:34:Pillow available
+ERROR:BlenderGIS-2210.core.checkdeps:42:Cannot install ImageIO's Freeimage plugin
+Traceback (most recent call last):
+  File "C:\Users\Stankovic\AppData\Roaming\Blender Foundation\Blender\4.3\scripts\addons\BlenderGIS-2210\core\checkdeps.py", line 40, in <module>
+    imageio.plugins._freeimage.get_freeimage_lib() #try to download freeimage lib
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Stankovic\AppData\Roaming\Blender Foundation\Blender\4.3\scripts\addons\BlenderGIS-2210\core\lib\imageio\plugins\_freeimage.py", line 56, in get_freeimage_lib
+    return get_remote_file(FNAME_PER_PLATFORM[plat])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Stankovic\AppData\Roaming\Blender Foundation\Blender\4.3\scripts\addons\BlenderGIS-2210\core\lib\imageio\core\fetching.py", line 99, in get_remote_file
+    _fetch_file(url, filename)
+  File "C:\Users\Stankovic\AppData\Roaming\Blender Foundation\Blender\4.3\scripts\addons\BlenderGIS-2210\core\lib\imageio\core\fetching.py", line 153, in _fetch_file
+    raise IOError('Unable to download %r. Perhaps there is a no internet '
+OSError: Unable to download 'freeimage-3.18.0-win64.dll'. Perhaps there is a no internet connection? If there is, please report this problem.
