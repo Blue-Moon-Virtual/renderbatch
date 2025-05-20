@@ -336,16 +336,33 @@ class BatchRenderApp:
                                        text="🔄 Refresh",
                                        command=self.refresh_jobs,
                                        style="TButton")
-        self.refresh_button.pack(side=tk.LEFT)
+        self.refresh_button.pack(side=tk.LEFT, padx=(0, 5))
         
-        # Right side: Auto-retry switch and Render button
+        # Output button
+        self.output_button = ttk.Button(left_controls,
+                                      text="📂 Output",
+                                      command=self.select_output_folder,
+                                      style="TButton",
+                                      state=tk.DISABLED)  # Initially disabled
+        self.output_button.pack(side=tk.LEFT)
+        
+        # Right side: First frame switch, Auto-retry switch and Render button
         right_controls = ttk.Frame(bottom_frame)
         right_controls.pack(side=tk.RIGHT)
+        
+        # First frame switch
+        self.first_frame_var = tk.BooleanVar(value=False)
+        self.first_frame_switch = ttk.Checkbutton(right_controls,
+                                                text="1st",
+                                                variable=self.first_frame_var,
+                                                command=self._toggle_first_frame,
+                                                style="Switch.TCheckbutton")
+        self.first_frame_switch.pack(side=tk.LEFT, padx=(0, 10))
         
         # Auto-retry switch
         self.auto_retry_var = tk.BooleanVar(value=self.auto_retry)
         self.auto_retry_switch = ttk.Checkbutton(right_controls,
-                                               text="Auto-retry on error",
+                                               text="Auto-retry",
                                                variable=self.auto_retry_var,
                                                command=self._toggle_auto_retry,
                                                style="Switch.TCheckbutton")
@@ -364,6 +381,33 @@ class BatchRenderApp:
                                     style="TLabel",
                                     anchor="w")
         self.status_label.pack(fill=tk.X, pady=(10, 0))
+        
+        # Initialize output path variable
+        self.output_path = None
+    
+    def _toggle_first_frame(self):
+        """Toggle the first frame mode and update output button state."""
+        is_first_frame = self.first_frame_var.get()
+        self.output_button['state'] = tk.NORMAL if is_first_frame else tk.DISABLED
+        
+        # Clear output path when disabling first frame mode
+        if not is_first_frame:
+            self.output_path = None
+            self.status_label.config(text="Output path cleared", foreground="yellow")
+            self.root.after(2000, lambda: self.status_label.config(text=""))
+
+    def select_output_folder(self):
+        """Open folder selection dialog for render output."""
+        folder = filedialog.askdirectory(
+            title='Select Output Folder for Renders'
+        )
+        if folder:
+            self.output_path = Path(folder)
+            self.status_label.config(
+                text=f"Output folder: {self.output_path.name}",
+                foreground="green"
+            )
+            self.root.after(2000, lambda: self.status_label.config(text=""))
     
     def _setup_job_list(self):
         """Setup the job list and its controls."""
@@ -717,7 +761,51 @@ class BatchRenderApp:
         job['status'] = 'Rendering'
         self.update_job_list()
         
-        command = [BLENDER_PATH, "-b", str(job['path']), "-a"]
+        # Base command without animation flag
+        command = [BLENDER_PATH, "-b", str(job['path'])]
+        
+        # Add animation flag only if first frame mode is not enabled
+        if not self.first_frame_var.get():
+            command.append("-a")
+        else:
+            # Add output path if specified
+            if hasattr(self, 'output_path') and self.output_path is not None:
+                try:
+                    # Create output path if it doesn't exist
+                    self.output_path.mkdir(parents=True, exist_ok=True)
+                    
+                    # Get the original file name without extension
+                    original_name = job['path'].stem
+                    
+                    # Create output path with original filename
+                    output_path = str(self.output_path).replace('\\', '/')
+                    if not output_path.endswith('/'):
+                        output_path += '/'
+                    # Use Blender's frame number format
+                    output_path += f"{original_name}####.jpg"
+                    
+                    # Update status to show output path
+                    self.status_label.config(
+                        text=f"Output: {output_path}",
+                        foreground="green"
+                    )
+                    
+                    # Add output path argument
+                    command.extend(["-o", output_path])
+                    
+                except Exception as e:
+                    self.status_label.config(
+                        text=f"Error setting output path: {str(e)}",
+                        foreground="red"
+                    )
+                    return
+            
+            # Add first frame argument when first frame mode is enabled
+            command.extend(["-f", "1"])
+            
+        # Log the final command for debugging
+        print(f"Executing command: {' '.join(command)}")
+        
         self.current_process = subprocess.Popen(command)
         
         while self.current_process.poll() is None and not self.should_stop:

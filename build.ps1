@@ -41,7 +41,7 @@ pyinstaller RenderBatch.spec
 # Check if build was successful
 if (Test-Path "dist/RenderBatch.exe") {
     Write-Host "Build successful!" -ForegroundColor Green
-    Write-Host "Executable location: $((Get-Item 'dist/RenderBatch.exe').FullName)" -ForegroundColor Green
+    Write-Host "Executable location: $((Get-Item "dist/RenderBatch.exe").FullName)" -ForegroundColor Green
     
     # Get file size
     $fileSize = (Get-Item "dist/RenderBatch.exe").Length / 1MB
