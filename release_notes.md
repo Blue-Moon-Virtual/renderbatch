@@ -1,6 +1,13 @@
-# RenderBatch v1.0.0
+# RenderBatch v1.1.0
 
-First release of RenderBatch, a modern batch rendering tool for Blender files.
+Second release of RenderBatch, a modern batch rendering tool for Blender files.
+
+## New Features
+- Added version information display
+- Improved error handling and reporting
+- Enhanced UI responsiveness
+- Better file path handling for non-ASCII characters
+- Improved drag and drop functionality
 
 ## Features
 - Batch rendering of Blender files
@@ -29,4 +36,5 @@ First release of RenderBatch, a modern batch rendering tool for Blender files.
 
 ## Notes
 - The application stores job information in AppData/BlueMoonVirtual/RenderBatch
-- Make sure Blender is installed at the default location (C:\Program Files\Blender Foundation\Blender 4.3\blender.exe) 
+- Make sure Blender is installed at the default location (C:\Program Files\Blender Foundation\Blender 4.3\blender.exe)
+- For non-ASCII characters in file paths, ensure your system locale supports them 

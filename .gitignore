@@ -40,6 +40,8 @@ _old/
 *.blend2
 desktop.ini
 jobs.json
+settings.json
+~/
 
 # Windows
 Thumbs.db 

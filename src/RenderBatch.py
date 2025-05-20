@@ -9,6 +9,9 @@ import sys
 import os
 from tkinterdnd2 import DND_FILES, TkinterDnD
 
+# Version information
+VERSION = "1.1.0"
+
 # Custom square button class
 class SquareButton(ttk.Button):
     def __init__(self, master=None, **kwargs):
