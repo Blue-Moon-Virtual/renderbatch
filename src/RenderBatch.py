@@ -10,7 +10,7 @@ import os
 from tkinterdnd2 import DND_FILES, TkinterDnD
 
 # Version information
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 
 # Custom square button class
 class SquareButton(ttk.Button):
@@ -46,9 +46,49 @@ def get_job_file_path():
         # When running as script, use the project directory
         return get_base_path() / "jobs.json"
 
+def get_settings_file_path():
+    """Get the path to the settings.json file."""
+    if getattr(sys, 'frozen', False):
+        # When running as executable, store in AppData/BlueMoonVirtual/RenderBatch
+        appdata = Path(os.getenv('APPDATA'))
+        app_dir = appdata / "BlueMoonVirtual" / "RenderBatch"
+        app_dir.mkdir(parents=True, exist_ok=True)
+        return app_dir / "settings.json"
+    else:
+        # When running as script, use the project directory
+        return get_base_path() / "settings.json"
+
+def load_blender_path():
+    """Load Blender path from settings file."""
+    try:
+        settings_file = get_settings_file_path()
+        if settings_file.exists():
+            with settings_file.open('r') as f:
+                data = json.load(f)
+                blender_path = data.get('blender_path')
+                if blender_path and Path(blender_path).exists():
+                    return blender_path
+    except (FileNotFoundError, json.JSONDecodeError, KeyError):
+        pass
+    # Default fallback path
+    return r"C:\Program Files\Blender Foundation\Blender 4.4\blender.exe"
+
+def save_blender_path(blender_path):
+    """Save Blender path to settings file."""
+    try:
+        settings_file = get_settings_file_path()
+        data = {'blender_path': blender_path}
+        with settings_file.open('w') as f:
+            json.dump(data, f, indent=2)
+        return True
+    except Exception as e:
+        print(f"Error saving settings: {e}")
+        return False
+
 BASE_PATH = get_base_path()
 JOB_FILE = get_job_file_path()
-BLENDER_PATH = r"C:\Program Files\Blender Foundation\Blender 4.3\blender.exe"
+SETTINGS_FILE = get_settings_file_path()
+BLENDER_PATH = load_blender_path()
 
 class BatchRenderApp:
     def __init__(self, root):
@@ -64,6 +104,9 @@ class BatchRenderApp:
         self.should_stop = False
         self.was_cancelled = False
         self.auto_retry = False  # New state for auto-retry
+        
+        # Load settings
+        self.blender_path = load_blender_path()
         
         # Load jobs
         self.jobs = self.load_job_list()
@@ -349,6 +392,13 @@ class BatchRenderApp:
                                       state=tk.DISABLED)  # Initially disabled
         self.output_button.pack(side=tk.LEFT)
         
+        # Settings button
+        self.settings_button = ttk.Button(left_controls,
+                                        text="⚙️ Settings",
+                                        command=self.select_blender_path,
+                                        style="TButton")
+        self.settings_button.pack(side=tk.LEFT, padx=(5, 0))
+        
         # Right side: First frame switch, Auto-retry switch and Render button
         right_controls = ttk.Frame(bottom_frame)
         right_controls.pack(side=tk.RIGHT)
@@ -411,6 +461,46 @@ class BatchRenderApp:
                 foreground="green"
             )
             self.root.after(2000, lambda: self.status_label.config(text=""))
+    
+    def select_blender_path(self):
+        """Open file selection dialog for Blender executable."""
+        # Show current blender path
+        current_path = Path(self.blender_path)
+        if current_path.exists():
+            self.status_label.config(
+                text=f"Current: {current_path.name}",
+                foreground="blue"
+            )
+        else:
+            self.status_label.config(
+                text="Blender path not found - please select",
+                foreground="red"
+            )
+        
+        file_path = filedialog.askopenfilename(
+            title='Select Blender Executable (blender.exe)',
+            filetypes=(('Executable Files', '*.exe'), ('All Files', '*.*'))
+        )
+        if file_path:
+            blender_path = Path(file_path)
+            if blender_path.name.lower() == 'blender.exe':
+                self.blender_path = str(blender_path)
+                if save_blender_path(self.blender_path):
+                    self.status_label.config(
+                        text=f"Blender path saved: {blender_path.name}",
+                        foreground="green"
+                    )
+                else:
+                    self.status_label.config(
+                        text="Error saving Blender path",
+                        foreground="red"
+                    )
+            else:
+                self.status_label.config(
+                    text="Please select blender.exe",
+                    foreground="red"
+                )
+            self.root.after(3000, lambda: self.status_label.config(text=""))
     
     def _setup_job_list(self):
         """Setup the job list and its controls."""
@@ -685,6 +775,14 @@ class BatchRenderApp:
     
     def start_render(self):
         """Start the batch render process."""
+        # Validate blender path exists
+        if not Path(self.blender_path).exists():
+            self.status_label.config(
+                text="Blender path not found. Please check settings.",
+                foreground="red"
+            )
+            return
+        
         # Get all jobs that are either Ready or Error
         available_jobs = []
         for job in self.jobs:
@@ -765,7 +863,7 @@ class BatchRenderApp:
         self.update_job_list()
         
         # Base command without animation flag
-        command = [BLENDER_PATH, "-b", str(job['path'])]
+        command = [self.blender_path, "-b", str(job['path'])]
         
         # Add animation flag only if first frame mode is not enabled
         if not self.first_frame_var.get():
